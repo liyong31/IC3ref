@@ -35,6 +35,8 @@ int main(int argc, char ** argv) {
   unsigned int propertyIndex = 0;
   bool basic = false, random = false;
   int verbose = 0;
+  FILE* fptr = NULL;
+
   for (int i = 1; i < argc; ++i) {
     if (string(argv[i]) == "-v")
       // option: verbosity
@@ -47,6 +49,12 @@ int main(int argc, char ** argv) {
       // testing; default behavior is deterministic
       srand(time(NULL));
       random = true;
+    }else if (string(argv[i]) == "-f") {
+      i ++;
+      fptr = fopen(argv[i], "r");
+      if (NULL == fptr) {
+        printf("aiger file can't be opened \n");
+      }
     }
     else if (string(argv[i]) == "-b")
       // option: use basic generalization
@@ -58,7 +66,9 @@ int main(int argc, char ** argv) {
 
   // read AIGER model
   aiger * aig = aiger_init();
-  const char * msg = aiger_read_from_file(aig, stdin);
+  const char * msg = fptr == NULL ? 
+      aiger_read_from_file(aig, stdin)
+    : aiger_read_from_file(aig, fptr);
   if (msg) {
     cout << msg << endl;
     return 0;
