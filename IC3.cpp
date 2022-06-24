@@ -144,13 +144,13 @@ namespace IC3 {
       // don't assert primed invariant constraints
       model.loadTransitionRelation(*lifts, false);
       // assert notInvConstraints (in stateOf) when lifting
-      notInvConstraints = Minisat::mkLit(lifts->newVar());
-      Minisat::vec<Minisat::Lit> cls;
-      cls.push(~notInvConstraints);
-      for (LitVec::const_iterator i = model.invariantConstraints().begin();
-           i != model.invariantConstraints().end(); ++i)
-        cls.push(model.primeLit(~*i));
-      lifts->addClause_(cls);
+      // notInvConstraints = Minisat::mkLit(lifts->newVar());
+      // Minisat::vec<Minisat::Lit> cls;
+      // cls.push(~notInvConstraints);
+      // for (LitVec::const_iterator i = model.invariantConstraints().begin();
+          //  i != model.invariantConstraints().end(); ++i)
+        // cls.push(model.primeLit(~*i));
+      // lifts->addClause_(cls);
     }
     ~IC3() {
       for (vector<Frame>::const_iterator i = frames.begin(); 
@@ -390,7 +390,10 @@ namespace IC3 {
       assumps.push(act);
       Minisat::vec<Minisat::Lit> cls;
       cls.push(~act);
-      cls.push(notInvConstraints);  // successor must satisfy inv. constraint
+      // cls.push(notInvConstraints);  // successor must satisfy inv. constraint
+      for (LitVec::const_iterator i = model.invariantConstraints().begin();
+           i != model.invariantConstraints().end(); ++i)
+        cls.push(model.primeLit(~*i));
       if (succ == 0)
         cls.push(~model.primedError());
       else
